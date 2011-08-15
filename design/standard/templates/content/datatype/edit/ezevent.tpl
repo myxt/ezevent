@@ -1,3 +1,6 @@
+{ezscript_require( array( 'ezevent.js', 'ezdatepicker.js' ) )}
+{ezcss_require( array( 'ezevent.css' ) )}
+
 {if is_set( $attribute_base )|not()}
 
     {def $attribute_base='ContentObjectAttribute'}

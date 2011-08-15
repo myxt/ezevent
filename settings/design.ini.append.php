@@ -10,6 +10,6 @@ DesignExtensions[]=ezevent
 #JavaScriptList[]=ezevent.js
 
 [StylesheetSettings]
-CSSFileList[]=ezevent.css
+#CSSFileList[]=ezevent.css
 
 */ ?>
