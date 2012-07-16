@@ -27,6 +27,7 @@ class eZEvent extends eZPersistentObject
 {
     const EVENTTYPE_NORMAL          = 11;
     const EVENTTYPE_FULL_DAY        = 12;
+    const EVENTTYPE_SIMPLE          = 14;
     const EVENTTYPE_WEEKLY_REPEAT   = 15;
     const EVENTTYPE_MONTHLY_REPEAT  = 16;
     const EVENTTYPE_YEARLY_REPEAT   = 17;
@@ -464,6 +465,7 @@ class eZEvent extends eZPersistentObject
             $origDate = $row['start_date'];
             // Increase date, until we are in the requested time span
             while ( in_array( $row['event_type'], array(
+                        self::EVENTTYPE_SIMPLE,
                         self::EVENTTYPE_WEEKLY_REPEAT,
                         self::EVENTTYPE_MONTHLY_REPEAT,
                         self::EVENTTYPE_YEARLY_REPEAT,
@@ -1352,26 +1354,26 @@ class eZEvent extends eZPersistentObject
                         ezevent.event_type = 11
                         AND
                         (
-                            ( ezevent.start_date >= $startDate AND ezevent.end_date <= $endDate AND ezevent.end_date != 0 )
+                            ( ezevent.end_date != 0 AND ezevent.start_date >= $startDate AND ezevent.end_date <= $endDate )
                             OR
-                            ( ezevent.start_date >= $startDate AND ezevent.start_date <= $endDate AND ezevent.end_date = 0 )
+                            ( ezevent.end_date != 0 AND ezevent.start_date <= $endDate AND ezevent.end_date >= $startDate )
                             OR
-                            ( ezevent.start_date <= $endDate AND ezevent.end_date >= $startDate AND ezevent.end_date != 0 )
+                            ( ezevent.end_date = 0  AND ezevent.start_date >= $startDate AND ezevent.start_date <= $endDate )
                         )
                     )
                     OR
                     ( ezevent.event_type = 12 AND ( ezevent.start_date >= $startDate AND ezevent.start_date <= $endDate ) )
                     OR
                     ( ezevent.event_type = 15 $queryWeekday
-                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR  ( ezevent.end_date != 0 AND ezevent.end_date >= $startDate ) )
+                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR ezevent.end_date >= $startDate )
                     )
                     OR
                     ( ezevent.event_type = 16 $queryDayOfMonth
-                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR  ( ezevent.end_date != 0 AND ezevent.end_date >= $startDate ) )
+                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR ezevent.end_date >= $startDate )
                     )
                     OR
                     ( ezevent.event_type = 17 $queryDayOfMonth $queryMonthOfYear
-                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR  ( ezevent.end_date != 0 AND ezevent.end_date >= $startDate ) )
+                        AND ezevent.start_date <= $endDate AND (  ezevent.end_date = 0 OR ezevent.end_date >= $startDate )
                     )
                 )
                 AND $attrWhere
@@ -1427,6 +1429,10 @@ class eZEvent extends eZPersistentObject
 //                     {
 //                         $typeIDArray[] = eZEvent::EVENTTYPE_TO_BE_DEFINED;
 //                     } break;
+                    case "simple":
+                    {
+                        $typeIDArray[] = eZEvent::EVENTTYPE_WEEKLY_REPEAT;
+                    } break;
                     case "weekly":
                     {
                         $typeIDArray[] = eZEvent::EVENTTYPE_WEEKLY_REPEAT;
